@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none">
+  <defs>
+    <linearGradient id="cfGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#818cf8" />
+      <stop offset="100%" stop-color="#6366f1" />
+    </linearGradient>
+  </defs>
+  <rect width="24" height="24" rx="6" fill="#18181b" />
+  <path d="M7 6v12l11-6-11-6z" fill="url(#cfGrad)" />
+  <circle cx="16" cy="7" r="2.5" fill="#38bdf8" />
+</svg>

@@ -1,0 +1,66 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Environment and Secrets (CRITICAL: Never commit credentials)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+server/.env
+server/.env.local
+client/.env
+client/.env.local
+
+# Build Outputs
+dist/
+build/
+client/dist/
+server/dist/
+
+# Large Video / Media Assets (Prevents GitHub 100MB file limit errors)
+uploads/
+outputs/
+thumbnails/
+server/uploads/
+server/outputs/
+server/thumbnails/
+*.mp4
+*.mov
+*.webm
+*.avi
+*.mkv
+*.wav
+*.mp3
+*.zip
+
+# Database data
+data/
+*.sqlite
+mongodb_data/
+
+# Logs and debug
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# OS and Editor Files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Scratch / Temp files
+scratch/
+server/scratch/
