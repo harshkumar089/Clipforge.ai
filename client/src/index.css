@@ -1,0 +1,530 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /* Light Mode Base Body */
+  body {
+    background-color: #ffffff;
+    background-image: 
+      radial-gradient(circle at 12% 12%, rgba(216, 180, 254, 0.18) 0%, transparent 45%),
+      radial-gradient(circle at 88% 18%, rgba(192, 132, 252, 0.16) 0%, transparent 50%),
+      radial-gradient(circle at 50% 85%, rgba(233, 213, 255, 0.24) 0%, transparent 55%);
+    background-attachment: fixed;
+    color: #0f172a;
+    font-family: 'Inter', sans-serif;
+    overflow-x: hidden;
+  }
+
+  /* Dark Mode Base Body with Cosmic Purple Nebula */
+  .dark body {
+    background-color: #090514;
+    background-image: 
+      radial-gradient(circle at 12% 12%, rgba(147, 51, 234, 0.22) 0%, transparent 45%),
+      radial-gradient(circle at 88% 18%, rgba(126, 34, 206, 0.20) 0%, transparent 50%),
+      radial-gradient(circle at 50% 85%, rgba(168, 85, 247, 0.16) 0%, transparent 55%);
+    background-attachment: fixed;
+    color: #f8fafc;
+  }
+
+  /* ==========================================================================
+     Circular Radial Theme Reveal Animation (Light <-> Dark Mode)
+     Originates from the physical coordinates of the ThemeToggle button
+     ========================================================================== */
+
+  @keyframes theme-radial-reveal {
+    from {
+      clip-path: circle(0px at var(--theme-toggle-x, 50%) var(--theme-toggle-y, 50%));
+    }
+    to {
+      clip-path: circle(var(--theme-toggle-radius, 2500px) at var(--theme-toggle-x, 50%) var(--theme-toggle-y, 50%));
+    }
+  }
+
+  ::view-transition-group(root) {
+    animation-duration: 0.62s;
+    animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  ::view-transition-image-pair(root) {
+    isolation: isolate;
+  }
+
+  /* Outgoing snapshot stays anchored beneath */
+  ::view-transition-old(root) {
+    animation: none;
+    mix-blend-mode: normal;
+    display: block;
+    height: 100%;
+    overflow: clip;
+    z-index: 1;
+  }
+
+  /* Incoming theme expands in a circular wave on top */
+  ::view-transition-new(root) {
+    animation: theme-radial-reveal 0.62s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    mix-blend-mode: normal;
+    display: block;
+    height: 100%;
+    overflow: clip;
+    z-index: 99999;
+  }
+
+  /* Reduced Motion fallback */
+  @media (prefers-reduced-motion: reduce) {
+    ::view-transition-group(root),
+    ::view-transition-old(root),
+    ::view-transition-new(root) {
+      animation: none !important;
+    }
+  }
+
+  /* Exclude heavy media from any unintended transition glitch */
+  video,
+  canvas,
+  audio,
+  .no-theme-transition {
+    transition: none !important;
+  }
+
+  /* Custom scrollbars with soft lavender / dark purple tones */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #faf5ff;
+  }
+  .dark ::-webkit-scrollbar-track {
+    background: #0f0821;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #d8b4fe;
+    border-radius: 3px;
+  }
+  .dark ::-webkit-scrollbar-thumb {
+    background: #4c1d95;
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #c084fc;
+  }
+  .dark ::-webkit-scrollbar-thumb:hover {
+    background: #6b21a8;
+  }
+}
+
+/* ==========================================================================
+   Purple Ambient Glow System (Light & Dark)
+   ========================================================================== */
+
+/* Universal Purple Ambient Glow Box for Containers */
+.ambient-glow-box {
+  border: 1px solid rgba(216, 180, 254, 0.75);
+  box-shadow: 0 0 20px -2px rgba(168, 85, 247, 0.18), 0 4px 12px -2px rgba(147, 51, 234, 0.08);
+  transition: all 0.25s ease;
+}
+
+.ambient-glow-box:hover {
+  border-color: rgba(168, 85, 247, 0.85);
+  box-shadow: 0 0 28px -2px rgba(168, 85, 247, 0.3), 0 6px 16px -2px rgba(147, 51, 234, 0.14);
+}
+
+.dark .ambient-glow-box {
+  border: 1px solid rgba(168, 85, 247, 0.35);
+  box-shadow: 0 0 25px -4px rgba(168, 85, 247, 0.35), 0 0 10px rgba(147, 51, 234, 0.15);
+}
+
+.dark .ambient-glow-box:hover {
+  border-color: rgba(192, 132, 252, 0.6);
+  box-shadow: 0 0 35px -2px rgba(168, 85, 247, 0.5), 0 0 16px rgba(147, 51, 234, 0.3);
+}
+
+/* Glassmorphic Panels & Containers */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(216, 180, 254, 0.8);
+  box-shadow: 0 0 24px -2px rgba(168, 85, 247, 0.14), 0 4px 12px -2px rgba(147, 51, 234, 0.06);
+  transition: all 0.25s ease;
+}
+
+.dark .glass-panel {
+  background: rgba(18, 11, 36, 0.92) !important;
+  border: 1px solid rgba(168, 85, 247, 0.35) !important;
+  box-shadow: 0 0 28px -4px rgba(168, 85, 247, 0.32), 0 4px 16px -2px rgba(0, 0, 0, 0.4);
+}
+
+.glass-card {
+  background: #ffffff;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(233, 213, 255, 0.9);
+  box-shadow: 0 0 18px -2px rgba(168, 85, 247, 0.12), 0 4px 12px -2px rgba(147, 51, 234, 0.05);
+  transition: all 0.25s ease;
+}
+
+.glass-card:hover {
+  border-color: rgba(168, 85, 247, 0.65);
+  box-shadow: 0 0 28px -2px rgba(168, 85, 247, 0.25), 0 8px 24px -4px rgba(147, 51, 234, 0.12);
+}
+
+.dark .glass-card {
+  background: rgba(22, 14, 44, 0.9) !important;
+  border: 1px solid rgba(168, 85, 247, 0.3) !important;
+  box-shadow: 0 0 22px -3px rgba(168, 85, 247, 0.25), 0 4px 14px rgba(0, 0, 0, 0.3);
+}
+
+.dark .glass-card:hover {
+  border-color: rgba(192, 132, 252, 0.6) !important;
+  box-shadow: 0 0 35px -2px rgba(168, 85, 247, 0.45), 0 8px 24px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* Luminous Purple Glow Aura for Interactive Elements */
+.purple-ambient-aura {
+  box-shadow: 0 0 25px rgba(168, 85, 247, 0.22);
+}
+
+.dark .purple-ambient-aura {
+  box-shadow: 0 0 32px rgba(168, 85, 247, 0.4);
+}
+
+/* Radiant Ambient Border for inputs & buttons */
+.ambient-border {
+  border-color: rgba(216, 180, 254, 0.75);
+}
+
+.dark .ambient-border {
+  border-color: rgba(168, 85, 247, 0.35);
+}
+
+.ambient-border:focus,
+.ambient-border:focus-within {
+  border-color: rgba(168, 85, 247, 0.9) !important;
+  box-shadow: 0 0 16px rgba(168, 85, 247, 0.3) !important;
+}
+
+/* Light purple ambient glow */
+.glow-primary {
+  box-shadow: 0 0 35px rgba(192, 132, 252, 0.3);
+}
+
+.dark .glow-primary {
+  box-shadow: 0 0 40px rgba(168, 85, 247, 0.45);
+}
+
+/* Ambient Purple Radial Gradients */
+.ambient-purple-radial {
+  background: radial-gradient(circle at 50% 50%, rgba(216, 180, 254, 0.22) 0%, rgba(243, 232, 255, 0.08) 60%, transparent 85%);
+}
+
+.dark .ambient-purple-radial {
+  background: radial-gradient(circle at 50% 50%, rgba(147, 51, 234, 0.28) 0%, rgba(126, 34, 206, 0.1) 60%, transparent 85%);
+}
+
+/* Phone Mockup Frame */
+.phone-mockup {
+  position: relative;
+  aspect-ratio: 9 / 16;
+  border: 10px solid #1e1b4b;
+  border-radius: 40px;
+  box-shadow: 0 0 40px rgba(168, 85, 247, 0.35), 0 25px 60px -15px rgba(147, 51, 234, 0.3), inset 0 0 0 2px rgba(255, 255, 255, 0.2);
+  overflow: hidden;
+  background: #000;
+}
+
+.phone-notch {
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90px;
+  height: 18px;
+  background-color: #1e1b4b;
+  border-radius: 12px;
+  z-index: 30;
+}
+
+/* ==========================================================================
+   Dark Mode Hover & Surface Rules (Completely Eliminates White Hover Fade)
+   ========================================================================== */
+
+/* Universal Dark Mode Hover Defense:
+   In dark mode, prevents any light hover utility from turning elements white.
+   Replaces white flash with a soft purple ambient glow. */
+.dark [class*="hover:bg-purple-50"]:hover,
+.dark [class*="hover:bg-purple-100"]:hover,
+.dark [class*="hover:bg-purple-200"]:hover,
+.dark [class*="hover:bg-white"]:hover,
+.dark [class*="hover:bg-slate-50"]:hover,
+.dark [class*="hover:bg-slate-100"]:hover,
+.dark [class*="hover:bg-gray-50"]:hover,
+.dark [class*="hover:bg-gray-100"]:hover {
+  background-color: rgba(147, 51, 234, 0.24) !important;
+  color: #f8fafc !important;
+  box-shadow: 0 0 16px -2px rgba(168, 85, 247, 0.35) !important;
+}
+
+.dark [class*="hover:bg-rose-50"]:hover {
+  background-color: rgba(225, 29, 72, 0.22) !important;
+  color: #fda4af !important;
+  box-shadow: 0 0 14px -2px rgba(244, 63, 94, 0.3) !important;
+}
+
+/* Ensure text inside hovered elements in dark mode remains bright and crisp */
+.dark [class*="hover:text-slate-600"]:hover,
+.dark [class*="hover:text-slate-700"]:hover,
+.dark [class*="hover:text-slate-800"]:hover,
+.dark [class*="hover:text-slate-900"]:hover {
+  color: #f8fafc !important;
+}
+
+.dark [class*="hover:text-purple-700"]:hover,
+.dark [class*="hover:text-purple-800"]:hover,
+.dark [class*="hover:text-purple-900"]:hover {
+  color: #e9d5ff !important;
+}
+
+/* ==========================================================================
+   Universal High-Contrast Typography System (Light & Dark Modes)
+   ========================================================================== */
+
+/* ── Light Mode Enhanced Legibility & Contrast ── */
+/* Prevents faint/washed-out text on white and lavender surfaces */
+html:not(.dark) .text-slate-400 {
+  color: #475569; /* elevate faint slate-400 to crisp readable slate-600 */
+}
+
+html:not(.dark) .text-slate-500 {
+  color: #334155; /* elevate slate-500 to rich high-contrast slate-700 */
+}
+
+html:not(.dark) .text-purple-300,
+html:not(.dark) .text-purple-400 {
+  color: #7e22ce; /* elevate washed-out purple to rich purple-700 */
+}
+
+/* ── Dark Mode Universal High-Contrast Typography ── */
+/* Ensures all elements, cards, and tools have luminous, crystal-clear text on dark surfaces */
+.dark .text-slate-950,
+.dark .text-slate-900,
+.dark .text-slate-800 {
+  color: #ffffff !important; /* maximum brilliance pure white */
+}
+
+.dark .text-slate-700,
+.dark .text-slate-600 {
+  color: #f1f5f9 !important; /* crisp slate-100 */
+}
+
+.dark .text-slate-500 {
+  color: #cbd5e1 !important; /* silver-lavender slate-300 */
+}
+
+.dark .text-slate-400 {
+  color: #94a3b8 !important; /* readable medium-light slate-400 */
+}
+
+.dark .text-purple-950,
+.dark .text-purple-900,
+.dark .text-purple-800 {
+  color: #f3e8ff !important; /* luminous lavender */
+}
+
+.dark .text-purple-700,
+.dark .text-purple-600 {
+  color: #c084fc !important; /* radiant purple-400 */
+}
+
+.dark .text-purple-500,
+.dark .text-purple-400 {
+  color: #d8b4fe !important; /* bright lavender-300 */
+}
+
+.dark .text-purple-300 {
+  color: #e9d5ff !important; /* luminous lavender-200 */
+}
+
+/* White text stays pure white in dark mode */
+.dark .text-white {
+  color: #ffffff !important;
+}
+
+/* Status Badges & Accents in Dark Mode */
+.dark .text-emerald-600,
+.dark .text-emerald-700,
+.dark .text-emerald-800 {
+  color: #34d399 !important;
+}
+
+.dark .text-amber-600,
+.dark .text-amber-700,
+.dark .text-amber-800 {
+  color: #fbbf24 !important;
+}
+
+.dark .text-rose-600,
+.dark .text-rose-700,
+.dark .text-rose-800 {
+  color: #fb7185 !important;
+}
+
+.dark .text-cyan-600,
+.dark .text-cyan-700,
+.dark .text-cyan-800 {
+  color: #38bdf8 !important;
+}
+
+/* Form Inputs, Textareas, and Selects Readability in Both Modes */
+input, textarea, select {
+  color: #0f172a;
+}
+
+.dark input,
+.dark textarea,
+.dark select {
+  color: #ffffff !important;
+}
+
+.dark input::placeholder,
+.dark textarea::placeholder {
+  color: #94a3b8 !important;
+}
+
+/* Dark mode right inspector aside & dialogs styling */
+.dark aside,
+.dark [role="dialog"],
+.dark .tool-panel {
+  color: #f8fafc;
+}
+
+.dark aside button:not(.bg-purple-600):not(.bg-gradient-to-r),
+.dark aside .bg-white:not(video):not(canvas),
+.dark [role="dialog"] .bg-white:not(video):not(canvas),
+.dark .glass-card .bg-white:not(video):not(canvas),
+.dark .glass-panel .bg-white:not(video):not(canvas) {
+  background-color: rgba(26, 16, 51, 0.75);
+  border-color: rgba(168, 85, 247, 0.28);
+  color: #f1f5f9;
+}
+
+.dark aside .bg-purple-50\/20,
+.dark aside .bg-purple-50\/25,
+.dark aside .bg-purple-50\/30,
+.dark aside .bg-purple-50\/40,
+.dark aside .bg-purple-50\/50,
+.dark aside .bg-purple-50\/60,
+.dark aside .bg-purple-50\/70,
+.dark aside .bg-purple-50\/80,
+.dark aside .bg-purple-50,
+.dark aside .bg-purple-100\/30,
+.dark aside .bg-purple-100\/40,
+.dark aside .bg-purple-100\/50,
+.dark aside .bg-purple-100\/60,
+.dark aside .bg-purple-100,
+.dark aside .bg-slate-50,
+.dark [role="dialog"] .bg-purple-50\/20,
+.dark [role="dialog"] .bg-purple-50\/30,
+.dark [role="dialog"] .bg-purple-50 {
+  background-color: rgba(147, 51, 234, 0.14);
+  border-color: rgba(168, 85, 247, 0.25);
+}
+
+.dark aside .border-purple-100,
+.dark [role="dialog"] .border-purple-100 {
+  border-color: rgba(168, 85, 247, 0.25);
+}
+
+.dark aside input[type="text"],
+.dark aside input[type="number"],
+.dark aside textarea,
+.dark [role="dialog"] input[type="text"] {
+  background-color: rgba(15, 9, 32, 0.85) !important;
+  color: #ffffff !important;
+  border-color: rgba(168, 85, 247, 0.35) !important;
+}
+
+.dark aside input[type="range"] {
+  accent-color: #a855f7;
+}
+
+/* Touch scrolling optimization for mobile panels and sidebars */
+.touch-scroll {
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+  overscroll-behavior-y: contain;
+}
+
+/* ==========================================================================
+   Micro-interactions & Accessible Focus States
+   ========================================================================== */
+
+/* Universal Accessible Focus Rings */
+:focus-visible {
+  outline: 2px solid rgba(168, 85, 247, 0.75);
+  outline-offset: 2px;
+}
+
+/* Smooth Entrance Animations */
+@keyframes saas-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes saas-scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-fade-in {
+  animation: saas-fade-in 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-scale-in {
+  animation: saas-scale-in 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Subtle Shimmer for Skeleton States */
+@keyframes saas-shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.shimmer-skeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(243, 232, 255, 0.4) 0%,
+    rgba(216, 180, 254, 0.8) 50%,
+    rgba(243, 232, 255, 0.4) 100%
+  );
+  background-size: 200% 100%;
+  animation: saas-shimmer 1.8s infinite;
+}
+
+.dark .shimmer-skeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(26, 16, 51, 0.6) 0%,
+    rgba(147, 51, 234, 0.25) 50%,
+    rgba(26, 16, 51, 0.6) 100%
+  );
+  background-size: 200% 100%;
+  animation: saas-shimmer 1.8s infinite;
+}
