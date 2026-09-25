@@ -16,13 +16,26 @@ const getCookieOptions = () => ({
   path: '/',
 });
 
+const isPlaceholderGoogleId = (id?: string): boolean => {
+  if (!id) return true;
+  const s = id.trim().toLowerCase();
+  return (
+    s === '' ||
+    s.includes('your-google-client-id') ||
+    s.includes('paste_your_client_id_here') ||
+    s.startsWith('paste_') ||
+    s.includes('<') ||
+    !s.includes('.apps.googleusercontent.com')
+  );
+};
+
 /**
  * Initiates the Google OAuth 2.0 / OpenID Connect authorization code flow
  * In local dev without Google Cloud credentials, serves an authentic Google Account Chooser
  */
 export const googleAuth = (req: Request, res: Response): void => {
-  // If real Google Client ID is configured, redirect to accounts.google.com
-  if (config.googleClientId && !config.googleClientId.includes('your-google-client-id')) {
+  // If real Google Client ID is configured (ends with .apps.googleusercontent.com), redirect to accounts.google.com
+  if (config.googleClientId && !isPlaceholderGoogleId(config.googleClientId)) {
     const state = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
     const params = new URLSearchParams({
       client_id: config.googleClientId,
