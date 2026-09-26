@@ -1,7 +1,22 @@
 import dotenv from 'dotenv';
 import path from 'path';
+import fs from 'fs';
 
-dotenv.config({ path: path.resolve(process.cwd(), '.env') });
+// Search potential .env locations in order of priority:
+const candidateEnvPaths = [
+  path.resolve(process.cwd(), '.env'),
+  path.resolve(process.cwd(), 'server/.env'),
+  path.resolve(process.cwd(), '../.env'),
+  typeof __dirname !== 'undefined' ? path.resolve(__dirname, '../../.env') : '',
+  typeof __dirname !== 'undefined' ? path.resolve(__dirname, '../../../.env') : '',
+].filter(Boolean);
+
+for (const envPath of candidateEnvPaths) {
+  if (fs.existsSync(envPath)) {
+    dotenv.config({ path: envPath, override: false });
+  }
+}
+
 
 export const config = {
   port: parseInt(process.env.PORT || '5000', 10),
@@ -9,7 +24,7 @@ export const config = {
   isProduction: process.env.NODE_ENV === 'production',
   serverUrl: process.env.SERVER_URL || 'http://localhost:5000',
   clientUrl: process.env.CLIENT_URL || 'http://localhost:5173',
-  mongoUri: process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/clipforge',
+  mongoUri: (process.env.MONGODB_URI && process.env.MONGODB_URI.trim()) || 'mongodb://127.0.0.1:27017/clipforge',
   jwtSecret: process.env.JWT_SECRET || 'clipforge_jwt_fallback_secret_key_2026',
   cookieName: 'clipforge_auth',
   cookieMaxAge: 7 * 24 * 60 * 60 * 1000, // 7 days in ms

@@ -3,14 +3,22 @@ import { MongoMemoryServer } from 'mongodb-memory-server';
 import { config } from './environment.js';
 import { logger } from '../utils/logger.js';
 
+const maskMongoUri = (uri: string): string => {
+  try {
+    return uri.replace(/\/\/[^@]+@/, '//***:***@');
+  } catch {
+    return '***';
+  }
+};
+
 let mongod: MongoMemoryServer | null = null;
 
 export const connectDatabase = async (): Promise<void> => {
   try {
-    // Attempt connecting to the configured MongoDB instance with a short timeout
-    logger.info(`Attempting to connect to MongoDB at ${config.mongoUri}...`);
+    // Attempt connecting to the configured MongoDB instance
+    logger.info(`Attempting to connect to MongoDB at ${maskMongoUri(config.mongoUri)}...`);
     await mongoose.connect(config.mongoUri, {
-      serverSelectionTimeoutMS: 2500,
+      serverSelectionTimeoutMS: 8000,
     });
     logger.info('Connected to MongoDB successfully.');
   } catch (primaryErr: any) {
