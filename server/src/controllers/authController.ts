@@ -82,6 +82,13 @@ export const googleDevCallback = async (req: Request, res: Response): Promise<vo
       return;
     }
 
+    const rawPassword = (req.body?.password || req.query.password || '').toString();
+
+    if (!rawPassword && (req.method === 'POST' || req.is('json'))) {
+      res.status(400).json({ success: false, message: 'Password is required to sign in with your Google account.' });
+      return;
+    }
+
     const email = rawEmail;
     const name = rawName || email.split('@')[0];
     const picture = (req.query.picture || req.body?.picture || `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(name)}`).toString();
@@ -89,32 +96,38 @@ export const googleDevCallback = async (req: Request, res: Response): Promise<vo
     const googleId = `google_sub_${Buffer.from(email).toString('hex').slice(0, 16)}`;
 
     // Find or create in MongoDB Atlas
-    let user = await User.findOne({ googleId });
+    let user = await User.findOne({ $or: [{ googleId }, { email }] });
     if (!user) {
-      user = await User.findOne({ email });
-      if (user) {
-        user.googleId = googleId;
-        user.provider = 'google';
-        if (!user.profilePicture) user.profilePicture = picture;
-        if (!user.avatar) user.avatar = picture;
-        user.lastLoginAt = new Date();
-        await user.save();
-      } else {
-        const parts = name.split(' ');
-        user = new User({
-          googleId,
-          email,
-          name,
-          firstName: parts[0] || '',
-          lastName: parts.slice(1).join(' ') || '',
-          profilePicture: picture,
-          avatar: picture,
-          provider: 'google',
-          lastLoginAt: new Date(),
-        });
-        await user.save();
-      }
+      const parts = name.split(' ');
+      user = new User({
+        googleId,
+        email,
+        name,
+        firstName: parts[0] || '',
+        lastName: parts.slice(1).join(' ') || '',
+        profilePicture: picture,
+        avatar: picture,
+        provider: 'google',
+        password: rawPassword || undefined,
+        lastLoginAt: new Date(),
+      });
+      await user.save();
     } else {
+      // If user exists and password was provided, verify or update
+      if (rawPassword) {
+        if (user.password) {
+          const isValid = await user.comparePassword(rawPassword);
+          if (!isValid) {
+            res.status(401).json({ success: false, message: 'Incorrect password for this account. Please enter the correct password.' });
+            return;
+          }
+        } else {
+          // Associate password with existing account
+          user.password = rawPassword;
+        }
+      }
+
+      if (!user.googleId) user.googleId = googleId;
       user.lastLoginAt = new Date();
       if (picture && user.profilePicture !== picture) {
         user.profilePicture = picture;

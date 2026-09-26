@@ -39,10 +39,10 @@ export const api = {
   logout: () => request<any>('/auth/logout', { method: 'POST' }),
   getMe: () => request<any>('/auth/me'),
   getAuthStatus: () => request<any>('/auth/status'),
-  googleSignIn: (email?: string, name?: string) =>
+  googleSignIn: (params: { email: string; password?: string; name?: string }) =>
     request<any>('/auth/google/dev-callback', {
       method: 'POST',
-      body: JSON.stringify({ email: email || 'ashme@gmail.com', name: name || 'Ashme' }),
+      body: JSON.stringify(params),
     }),
   updateProfile: (body: any) => request<any>('/auth/profile', { method: 'PUT', body: JSON.stringify(body) }),
 

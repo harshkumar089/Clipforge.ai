@@ -16,6 +16,8 @@ export const RegisterPage: React.FC = () => {
   // Modal for entering Google Account credentials when live Google Cloud keys are not in .env
   const [showGoogleModal, setShowGoogleModal] = useState(false);
   const [modalGoogleEmail, setModalGoogleEmail] = useState('');
+  const [modalGooglePassword, setModalGooglePassword] = useState('');
+  const [showModalPassword, setShowModalPassword] = useState(false);
   const [modalGoogleName, setModalGoogleName] = useState('');
 
   const { user, login } = useAuth();
@@ -79,14 +81,22 @@ export const RegisterPage: React.FC = () => {
   // Complete Google Sign-Up with user's personal Google email & name
   const handleModalGoogleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!modalGoogleEmail) {
-      showToast('Please enter your Google account email.', 'error');
+    if (!modalGoogleEmail || !modalGooglePassword) {
+      showToast('Please enter your Google email and a password.', 'error');
+      return;
+    }
+    if (modalGooglePassword.length < 6) {
+      showToast('Password must be at least 6 characters.', 'error');
       return;
     }
 
     try {
       setGoogleLoading(true);
-      const res = await api.googleSignIn(modalGoogleEmail, modalGoogleName || modalGoogleEmail.split('@')[0]);
+      const res = await api.googleSignIn({
+        email: modalGoogleEmail,
+        password: modalGooglePassword,
+        name: modalGoogleName || modalGoogleEmail.split('@')[0],
+      });
       if (res.success && res.token && res.user) {
         login(res.token, res.user);
         setShowGoogleModal(false);
@@ -296,6 +306,27 @@ export const RegisterPage: React.FC = () => {
                   onChange={(e) => setModalGoogleEmail(e.target.value)}
                   className="mt-1 w-full px-3 py-2 text-sm rounded-xl border border-purple-200 dark:border-purple-800 bg-purple-50/50 dark:bg-purple-950/40 text-slate-900 dark:text-white outline-none focus:border-purple-500"
                 />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-purple-200">Password</label>
+                <div className="relative mt-1">
+                  <input
+                    type={showModalPassword ? 'text' : 'password'}
+                    required
+                    placeholder="At least 6 characters"
+                    value={modalGooglePassword}
+                    onChange={(e) => setModalGooglePassword(e.target.value)}
+                    className="w-full px-3 py-2 pr-10 text-sm rounded-xl border border-purple-200 dark:border-purple-800 bg-purple-50/50 dark:bg-purple-950/40 text-slate-900 dark:text-white outline-none focus:border-purple-500"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowModalPassword(!showModalPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-purple-600 dark:hover:text-purple-300 p-0.5"
+                  >
+                    {showModalPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
               </div>
 
               <div>
