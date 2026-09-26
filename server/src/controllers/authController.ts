@@ -216,13 +216,61 @@ export const googleDevCallback = async (req: Request, res: Response): Promise<vo
       { expiresIn: '7d' }
     );
 
-    res.cookie(config.cookieName, token, getCookieOptions());
+    // If client requested JSON (API / fetch call from React)
+    if (
+      req.xhr ||
+      req.headers.accept?.includes('application/json') ||
+      req.is('json') ||
+      req.method === 'POST'
+    ) {
+      res.status(200).json({
+        success: true,
+        token,
+        user: {
+          id: user._id,
+          googleId: user.googleId,
+          name: user.name,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.email,
+          profilePicture: user.profilePicture || user.avatar,
+          avatar: user.avatar || user.profilePicture,
+          provider: user.provider,
+          lastLoginAt: user.lastLoginAt,
+          createdAt: user.createdAt,
+        },
+      });
+      return;
+    }
 
     res.redirect(`${config.clientUrl}/dashboard?auth_success=true&token=${encodeURIComponent(token)}`);
   } catch (err: any) {
     logger.error('Dev Google Auth error:', err);
+    if (req.method === 'POST' || req.is('json') || req.headers.accept?.includes('application/json')) {
+      res.status(500).json({ success: false, message: err.message || 'Google sign-in failed' });
+      return;
+    }
     res.redirect(`${config.clientUrl}/login?error=dev_auth_failed`);
   }
+};
+
+/**
+ * Returns current OAuth configuration status
+ */
+export const authStatus = (req: Request, res: Response): void => {
+  const hasLiveGoogle = Boolean(
+    config.googleClientId &&
+    !isPlaceholderGoogleId(config.googleClientId) &&
+    config.googleClientSecret &&
+    !config.googleClientSecret.includes('PASTE_')
+  );
+
+  res.status(200).json({
+    success: true,
+    hasLiveGoogleAuth: hasLiveGoogle,
+    defaultEmail: 'ashme@gmail.com',
+    defaultName: 'Ashme',
+  });
 };
 
 /**

@@ -4,6 +4,7 @@ import {
   googleCallback,
   googleDevCallback,
   getMe,
+  authStatus,
   logout,
   updateProfile,
   register,
@@ -12,6 +13,9 @@ import {
 import { requireAuth } from '../middleware/auth.js';
 
 const router = Router();
+
+// OAuth status endpoint
+router.get('/status', authStatus);
 
 // Google OAuth 2.0 / OpenID Connect endpoints
 router.get('/google', googleAuth);

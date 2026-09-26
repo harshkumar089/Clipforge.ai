@@ -32,6 +32,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           window.history.replaceState({}, document.title, cleanUrl);
         }
 
+        const activeToken = urlToken || localStorage.getItem('clipforge_token');
+        if (!activeToken) {
+          setUser(null);
+          setToken(null);
+          setIsLoading(false);
+          return;
+        }
+
         // Query GET /api/auth/me with credentials: 'include' (cookies) and token header if present
         const res = await api.getMe();
         if (res.success && res.user) {
