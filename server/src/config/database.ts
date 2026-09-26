@@ -13,8 +13,8 @@ export const connectDatabase = async (): Promise<void> => {
       serverSelectionTimeoutMS: 2500,
     });
     logger.info('Connected to MongoDB successfully.');
-  } catch (primaryErr) {
-    logger.warn('Could not connect to external MongoDB. Initializing local in-memory MongoDB runner...');
+  } catch (primaryErr: any) {
+    logger.warn(`Could not connect to external MongoDB: ${primaryErr.message}. Initializing local in-memory MongoDB runner...`);
     try {
       mongod = await MongoMemoryServer.create();
       const uri = mongod.getUri();
