@@ -33,24 +33,6 @@ export const connectDatabase = async (): Promise<void> => {
       throw memErr;
     }
   }
-
-  // Ensure default demo user exists
-  try {
-    const { User } = await import('../models/User.js');
-    const existing = await User.findOne({ email: 'demo@clipforge.com' });
-    if (!existing) {
-      const demoUser = new User({
-        email: 'demo@clipforge.com',
-        password: 'password123',
-        name: 'Demo Creator',
-        plan: 'pro',
-      });
-      await demoUser.save();
-      logger.info('Default demo user seeded: demo@clipforge.com / password123');
-    }
-  } catch (seedErr: any) {
-    logger.warn('Could not auto-seed demo user:', seedErr.message);
-  }
 };
 
 export const disconnectDatabase = async (): Promise<void> => {
